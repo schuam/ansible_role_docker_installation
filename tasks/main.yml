@@ -48,6 +48,7 @@
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     keyring: /etc/apt/keyrings/docker.gpg
+  become: true
 
 - name: Install the Docker Engine.
   ansible.builtin.apt:
