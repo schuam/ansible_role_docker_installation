@@ -1,2 +1,68 @@
 ---
-# tasks file for ansible_role_docker_installation
+- name: Uninstall old versions of docker and related packages.
+  ansible.builtin.apt:
+    name:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
+    state: absent
+  when: pre_installation_cleanup | bool
+  become: true
+
+- name: Install some prerequisites.
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - gnupg
+      - lsb-release
+    state: present
+  become: true
+
+- name: Get system architecture.
+  ansible.builtin.command: dpkg --print-architecture
+  register: architecture
+  changed_when: false
+
+- name: Get Ubuntu version codename.
+  ansible.builtin.command: lsb_release -cs
+  register: ubuntu_codename
+  changed_when: false
+
+- name: Set up apt repository.
+  ansible.builtin.lineinfile:
+    create: true
+    line: >
+      deb [arch={{ architecture['stdout'] }}
+      signed-by=/etc/apt/keyrings/docker.gpg]
+      https://download.docker.com/linux/ubuntu
+      {{ ubuntu_codename['stdout'] }} stable
+    mode: 0644
+    path: /etc/apt/sources.list.d/docker.list
+    search_string: deb
+    state: present
+  become: true
+
+- name: Add Docker's official GPG key.
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    keyring: /etc/apt/keyrings/docker.gpg
+
+- name: Install the Docker Engine.
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+  become: true
+
+- name: Add "docker" group.
+  ansible.builtin.group:
+    name: docker
+    state: present
+    system: true
+  become: true
