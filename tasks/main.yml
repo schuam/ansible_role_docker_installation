@@ -50,7 +50,6 @@
     owner: root
     group: root
     path: /etc/apt/keyrings
-    recurse: true
     state: directory
   become: true
 
