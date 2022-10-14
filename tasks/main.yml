@@ -77,3 +77,12 @@
     state: present
     system: true
   become: true
+
+- name: Install Docker Compose.
+  ansible.builtin.apt:
+    name:
+      - docker-compose-plugin
+    state: present
+    cache_valid_time: 3600
+  when: install_docker_compose | bool
+  become: true
