@@ -44,6 +44,16 @@
     state: present
   become: true
 
+- name: Make sure /etc/apt/keyrings/ directory exists.
+  ansible.builtin.file:
+    mode: 0755
+    owner: root
+    group: root
+    path: /etc/apt/keyrings
+    recurse: true
+    state: directory
+  become: true
+
 - name: Add Docker's official GPG key.
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
