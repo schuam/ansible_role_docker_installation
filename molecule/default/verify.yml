@@ -5,6 +5,13 @@
   hosts: all
   gather_facts: false
   tasks:
-  - name: Example assertion
+  - name: Run 'docker compose version'.
+    ansible.builtin.command: docker compose version
+    register: docker_compose_version
+    changed_when: false
+
+  - name: Check if docker compose is installed.
     ansible.builtin.assert:
-      that: true
+      that: "'is not a docker command' not in docker_compose_version.stdout"
+      fail_msg: "Docker Compose is not installed."
+      success_msg: "Docker Compose is installed."
