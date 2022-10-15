@@ -65,7 +65,6 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
-      - docker-compose-plugin
     state: present
     update_cache: true
   become: true
